@@ -423,6 +423,38 @@ def checkForAnnualUsageChart(page, commodity):
     else:
         return False
 
+# generates list of letters to use as Excel column indices once the Excel file goes past col Z (next col is AA)
+# returns col_list - list of strings
+def generateExcelColumnList():
+        
+    col_list = []
+
+
+    j = 0
+    k = 0
+
+    for i in range(0,26):
+        col_list.append(ascii_uppercase[i])
+
+
+    while col_list[len(col_list) - 1] != 'ZZ': 
+
+        if k < 26:
+            curr_col = ascii_uppercase[j] + ascii_uppercase[k]
+            col_list.append(curr_col)
+            k +=1
+        
+        else:
+            
+            k = 0
+            j += 1
+            
+            curr_col = ascii_uppercase[j] + ascii_uppercase[k]
+            col_list.append(curr_col)
+
+    return col_list
+
+
 
 
 # In[625]:
@@ -1239,24 +1271,80 @@ def writeToExcelFile(bill_df, excel_file_name):
             if j > 6: # add more headers if there are more than 5 locations
             
                 ws_flight_plan.cell(row = 20, column = j + transposed_col_offset).value = f'Location {j-1}'
+    
+    excel_col_list = generateExcelColumnList()
 
-    if ws_flight_plan.max_column > 6: # if there are more than 5 locations, adjust Excel formulas in col E to match
+    # if there are more than 5 locations, adjust Excel formulas past col E to match 
+    if ws_transposed.max_column > 6:
         
-        last_col = ascii_uppercase[ws_flight_plan.max_column-1]
-        
+        last_col = excel_col_list[ws_flight_plan.max_column-1]
+
         ws_flight_plan['E10'].value = f'=SUM(G12:{last_col}12)'
         ws_flight_plan['E13'].value = f'=SUM(G18: {last_col}18)'
         ws_flight_plan['E23'].value = f'=SUM(G25:{last_col}25)'
         ws_flight_plan['E26'].value = f'=SUM(G31: {last_col}31)'
-        
-        
-        # adding Excel formula at the bottom of each commodity column to get cost for each location
+
         for i in range(12,ws_flight_plan.max_column + 1):
-            for count, col_name in enumerate(ascii_uppercase):
+
+            curr_col = excel_col_list[i - 1]
+            ws_flight_plan[f'{curr_col}18'] = f'= {curr_col}12 * {curr_col}16'
+            ws_flight_plan[f'{curr_col}31'] = f'= {curr_col}25 * {curr_col}29'
+                
+    # matching formatting of new columns to original template     
+    for i in range (3, 32):
+        for j in range (11, ws_flight_plan.max_column + 1):
             
-                curr_col = ascii_uppercase[i - 1]
-                ws_flight_plan[f'{curr_col}18'] = f'= {curr_col}12 * {curr_col}16'
-                ws_flight_plan[f'{curr_col}31'] = f'= {curr_col}25 * {curr_col}29'
+            copyOriginalCellFormatting(ws_flight_plan, i, j)
+
+
+    # if ws_flight_plan.max_column > 6: # if there are more than 5 locations, adjust Excel formulas in col E to match
+        
+    #     if (ws_flight_plan.max_column > 26):
+
+    #         curr_col_num = 27
+    #         first_col_letter = 0
+    #         second_col_letter = 0
+
+    #         while (len(bill_df.index) > curr_col_num):
+    #             curr_col_num +=1
+    #             second_col_letter += 1
+
+    #             if second_col_letter > 26:
+    #                 first_col_letter += 1
+    #                 second_col_letter = 0
+        
+    #         last_col = ascii_uppercase[first_col_letter] + ascii_uppercase[second_col_letter]
+        
+    #     else:
+    #         last_col = ascii_uppercase[ws_flight_plan.max_column-1]
+
+    #     ws_flight_plan['E10'].value = f'=SUM(G12:{last_col}12)'
+    #     ws_flight_plan['E13'].value = f'=SUM(G18: {last_col}18)'
+    #     ws_flight_plan['E23'].value = f'=SUM(G25:{last_col}25)'
+    #     ws_flight_plan['E26'].value = f'=SUM(G31: {last_col}31)'
+        
+    #     first_col_letter_curr_col = 0
+    #     second_col_letter_curr_col = 0
+
+    #     # adding Excel formula at the bottom of each commodity column to get cost for each location
+    #     for i in range(12,ws_flight_plan.max_column + 1):
+    #         for count, col_name in enumerate(ascii_uppercase):
+            
+    #             if (i > 26):
+
+    #                 curr_col = ascii_uppercase[first_col_letter_curr_col] + ascii_uppercase[second_col_letter_curr_col]
+
+    #                 second_col_letter += 1
+
+    #                 if second_col_letter > 26:
+    #                     first_col_letter += 1
+    #                     second_col_letter = 0
+
+    #             else:
+    #                 curr_col = ascii_uppercase[i - 1]
+        
+    #             ws_flight_plan[f'{curr_col}18'] = f'= {curr_col}12 * {curr_col}16'
+    #             ws_flight_plan[f'{curr_col}31'] = f'= {curr_col}25 * {curr_col}29'
 
     # matching formatting of new columns to original template     
     for i in range (3, 32):
@@ -1266,7 +1354,7 @@ def writeToExcelFile(bill_df, excel_file_name):
         
     wb.remove(wb['Formatted Data']) # This sheet is no longer needed after the data is copied to the flight plan
 
-    wb.save(excel_file_name) 
+    wb.save(excel_file_name)
     
     execution_complete = True
 
