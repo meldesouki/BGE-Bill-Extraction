@@ -33,7 +33,7 @@ e_or_g_supplier_section = [[sg.Text('Is there a supplier for this commodity?', s
 
 layout = [[sg.Text('Select a bill PDF: ', size = (19,1))],
         
-        [sg.Input(), sg.FileBrowse(key = '-BILL_PDF-', file_types = (('PDF Files', '*.pdf'),))],
+        [sg.Input(), sg.FileBrowse(key = '-BILL_PDF-', file_types = (('PDF files', '*.pdf'),))],
         #   [sg.Text( size=(40,1), key='-OUTPUT_BILL_PDF_FILE_NAME-')],
 
           [sg.Radio('Electricity Only', 'Bill Type', default = False, key = '-ELECTRICITY_ONLY-', enable_events=True), 
@@ -43,7 +43,7 @@ layout = [[sg.Text('Select a bill PDF: ', size = (19,1))],
           [collapse(eg_supplier_section, '-ASK_SUPPLIER_EG-', False), collapse(e_or_g_supplier_section, '-ASK_SUPPLIER_E_OR_G-', False) ],
 
           [sg.Text('Select the Excel file you would like to output to: ', size = (51,1))],
-          [sg.Input(), sg.FileBrowse(key = '-EXCEL_FILE-', file_types = (('Excel Files', '*.xlsx'),))],
+          [sg.Input(), sg.FileBrowse(key = '-EXCEL_FILE-', file_types = (('Excel files', '*.xlsx'),))],
         #   [sg.Text( size=(40,1), key='-OUTPUT_EXCEL_FILE_NAME-')],
           [sg.Button('OK'), sg.Exit()]]
 
@@ -156,7 +156,3 @@ def drawMainWindow():
     window.close()
 
 drawMainWindow()
-
-
-
-# print(values['-ELECTRICITY_ONLY-'], values['-GAS_ONLY-'], values['-ELECTRICITY_GAS-'])

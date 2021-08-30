@@ -1176,7 +1176,7 @@ def writeToExcelFile(bill_df, excel_file_name):
         existing_bill_df = pd.DataFrame(data, columns=cols)
         existing_bill_df.insert(0, column = company_col[0], value = company_col[1:])
 
-        ws_unformatted.protection.sheet = True
+        # ws_unformatted.protection.sheet = True
         ws_unformatted.sheet_state = 'hidden'
         
         ws_transposed = wb.create_sheet('Formatted Data')
