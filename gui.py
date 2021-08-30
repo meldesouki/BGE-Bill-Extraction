@@ -33,8 +33,8 @@ e_or_g_supplier_section = [[sg.Text('Is there a supplier for this commodity?', s
 
 layout = [[sg.Text('Select a bill PDF: ', size = (19,1))],
         
-        [sg.Input(), sg.FileBrowse(key = '-BILL_PDF-', file_types = (('PDF Files', '*.pdf'),))],
-          [sg.Text( size=(40,1), key='-OUTPUT_BILL_PDF_FILE_NAME-')],
+        [sg.Input(), sg.FileBrowse(key = '-BILL_PDF-', file_types = (('PDF files', '*.pdf'),))],
+        #   [sg.Text( size=(40,1), key='-OUTPUT_BILL_PDF_FILE_NAME-')],
 
           [sg.Radio('Electricity Only', 'Bill Type', default = False, key = '-ELECTRICITY_ONLY-', enable_events=True), 
           sg.Radio('Gas Only', 'Bill Type', default = False, key = '-GAS_ONLY-', enable_events=True), 
@@ -43,22 +43,24 @@ layout = [[sg.Text('Select a bill PDF: ', size = (19,1))],
           [collapse(eg_supplier_section, '-ASK_SUPPLIER_EG-', False), collapse(e_or_g_supplier_section, '-ASK_SUPPLIER_E_OR_G-', False) ],
 
           [sg.Text('Select the Excel file you would like to output to: ', size = (51,1))],
-          [sg.Input(), sg.FileBrowse(key = '-EXCEL_FILE-', file_types = (('Excel Files', '*.xlsx'),))],
-          [sg.Text( size=(40,1), key='-OUTPUT_EXCEL_FILE_NAME-')],
+          [sg.Input(), sg.FileBrowse(key = '-EXCEL_FILE-', file_types = (('Excel files', '*.xlsx'),))],
+        #   [sg.Text( size=(40,1), key='-OUTPUT_EXCEL_FILE_NAME-')],
           [sg.Button('OK'), sg.Exit()]]
 
 def drawMainWindow():
     
     window = sg.Window('BGE Bill Extraction', layout)
-    extraction_complete = False
+
+    
     while True:
         event, values = window.read()
         
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
 
+        extraction_complete = False
         bill_file_name = values['-BILL_PDF-'].split('/')[-1]
-        window['-OUTPUT_BILL_PDF_FILE_NAME-'].update('Bill selected:  ' + bill_file_name)
+        # window['-OUTPUT_BILL_PDF_FILE_NAME-'].update('Bill selected:  ' + bill_file_name)
 
         if event == '-ELECTRICITY_GAS-':
             window['-ASK_SUPPLIER_E_OR_G-'].update(visible = False)
@@ -69,7 +71,7 @@ def drawMainWindow():
             window['-ASK_SUPPLIER_E_OR_G-'].update(visible = True)
 
         excel_file_name = values['-EXCEL_FILE-'].split('/')[-1]
-        window['-OUTPUT_EXCEL_FILE_NAME-'].update('Excel file selected:  ' + excel_file_name)
+        # window['-OUTPUT_EXCEL_FILE_NAME-'].update('Excel file selected:  ' + excel_file_name)
 
         if event == 'OK':
 
@@ -154,7 +156,3 @@ def drawMainWindow():
     window.close()
 
 drawMainWindow()
-
-
-
-# print(values['-ELECTRICITY_ONLY-'], values['-GAS_ONLY-'], values['-ELECTRICITY_GAS-'])
